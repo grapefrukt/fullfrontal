@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<!-- NMML reference: https://gist.github.com/1763850 -->
+	
+	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
+	<meta title="fullfrontal" package="com.grapefrukt.apps.fullfrontal.fullfrontal" version="1.0.0" company="Martin Jonasson, m@grapefrukt.com" />
+	
+	<!-- output -->
+	<app main="com.grapefrukt.apps.fullfrontal.Main" file="fullfrontal" path="bin" />
+	
+	<window background="#ff00ff" fps="60" />
+	<window width="320" height="244" />
+	<window orientation="landscape" vsync="true" antialiasing="0" if="cpp" />
+	
+	<!-- classpath, haxe libs -->
+	<source path="src" />
+	<haxelib name="openfl" />
+	<haxelib name="actuate" />
+	
+	<!-- assets -->
+	<icon path="assets/openfl.svg" />
+	<assets path="assets/img" rename="img" />
+	
+	<!-- optimize output
+	<haxeflag name="-dce full" /> -->
+	
+</project>
