@@ -34,7 +34,7 @@ class Main extends Sprite {
 	}
 	
 	function checkFullscreen() {
-		trace('checkFullscreen', hasGameRunning, stage.displayState);
+		//trace('checkFullscreen', hasGameRunning, stage.displayState);
 		//stage.displayState = hasGameRunning ? StageDisplayState.NORMAL : StageDisplayState.FULL_SCREEN;
 	}
 	
