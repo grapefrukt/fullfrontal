@@ -3,9 +3,11 @@ import com.grapefrukt.apps.fullfrontal.data.GameData;
 import com.grapefrukt.apps.fullfrontal.Parser.Tag;
 import cpp.vm.Thread;
 import haxe.io.Eof;
+import haxe.Timer;
 import openfl.Lib;
 import sys.io.File;
 import sys.FileSystem;
+import sys.io.FileInput;
 import sys.io.FileSeek;
 
 /**
@@ -16,100 +18,106 @@ import sys.io.FileSeek;
 class Parser {
 
 	var startTime:Int = 0;
-	var data:Array<GameData>;
+	var workThread:Thread;
+	var tagName:Tag;
+	var tagDescription:Tag;
+	var tagYear:Tag;
+	var tagManufacturer:Tag;
+	var tagCategory:Tag;
+	var tagNPlayers:Tag;
+	var file:FileInput;
+	var numBytes:Int;
+	var charsRead:Int;
+	var name:String;
 	
-	public function new() {	
+	var parseTimer:Timer;
+	var games:Array<GameData>;
+	
+	public var progress(get, never):Float;
+	
+	public function new() {			
 		startTime = Lib.getTimer();
-		var numThreads = 1;
-		for (i in 0 ... numThreads){
-			var t = Thread.create(parse);
-			t.sendMessage(onParseProgress);
-			t.sendMessage(i / numThreads);
-			t.sendMessage((i + 1) / numThreads);
-		}
+		
+		prepare();
+		
+		parseTimer = new Timer(16);
+		parseTimer.run = parse;
+		
+		parse();
 	}
 	
-	function onParseProgress(progress:Float, data:List<GameData>) {
-		trace('parsed ${Math.round(progress * 100)}%');
-		if (data != null) {
-			//this.data = data;
-			trace('parsed ${data.length} entries in ' + (Lib.getTimer() - startTime) + 'ms');
-			
-			//this.data[Std.int(Math.random() * data.length)].trace();
-		}
-	}
-	
-	private static function parse() {
-		var games:List<GameData> = new List();
+	private function prepare() {
+		games = [];
 		
-		var tagName 		= new Tag('<game name="', '"');
-		var tagDescription 	= new Tag('<description>', '</description>');
-		var tagYear 		= new Tag('<year>', '</year>');
-		var tagManufacturer = new Tag('<manufacturer>', '</manufacturer>');
-		var tagCategory 	= new Tag('<category>', '</category>');
-		var tagNPlayers 	= new Tag('<nplayers>', '</nplayers>');
-		
-		var onProgress:Float->List<GameData>->Void = Thread.readMessage(true);
-		var startFraction:Float = Thread.readMessage(true);
-		var endFraction:Float = Thread.readMessage(true);
+		tagName = new Tag('<game name="', '"');
+		tagDescription = new Tag('<description>', '</description>');
+		tagYear = new Tag('<year>', '</year>');
+		tagManufacturer = new Tag('<manufacturer>', '</manufacturer>');
+		tagCategory = new Tag('<category>', '</category>');
+		tagNPlayers = new Tag('<nplayers>', '</nplayers>');
 		
 		var path = Main.home + '\\mame_filtered.xml';
-		
 		var stat = FileSystem.stat(path);
-		var numBytes = stat.size * (endFraction - startFraction);
 		
-		var f = File.read(path);
-		f.seek(Std.int(numBytes * startFraction), FileSeek.SeekCur);
+		numBytes = stat.size;
+		file = File.read(path, false);
 		
-		var charsRead = 0;
-		var callbackCounter = 5000 * startFraction;
+		name = '';
+	}
+	
+	private function parse() {
+		for (i in 0 ... 2000) if (!_parse()) break;
+		if (file == null) {
+			parseTimer.stop();
+			trace('parsed ${games.length} entries in ' + (Lib.getTimer() - startTime) + 'ms');
+		} else {
+			trace(Math.round(charsRead / numBytes * 100) + '%');
+		}
+	}
+	
+	private function _parse() {
+		var line = '';
 		
 		try {
-			var game:GameData = null;
-			var name:String = '';
-			
-			while (true) {
-				var str = f.readLine();
-				
-				if (!tagName.canMatch) {
-					name = tagName.result;
-					tagName.clear();
-				}
-				
-				if (tagDescription.canMatch && tagDescription.match(str)) {
-				} else if (tagYear.canMatch && tagYear.match(str)) {
-				} else if (tagManufacturer.canMatch && tagManufacturer.match(str)) {
-				} else if (tagCategory.canMatch && tagCategory.match(str)) {
-				} else if (tagNPlayers.canMatch && tagNPlayers.match(str)) {
-				} else if (tagName.canMatch && tagName.match(str)) {
-					if (name.length > 0) {
-						//games.add(
-						new GameData(name, tagDescription.result, tagYear.result, tagManufacturer.result, tagCategory.result, Std.parseInt(tagNPlayers.result));
-						//);
-						
-						tagDescription.clear();
-						tagYear.clear();
-						tagManufacturer.clear();
-						tagCategory.clear();
-						tagNPlayers.clear();
-						
-						if (charsRead > numBytes) break;
-					}
-				}
-				
-				charsRead += str.length;
-				
-				if (callbackCounter-- <= 0) {
-					callbackCounter = 4000;
-					onProgress(charsRead / numBytes, null);
-				}
-			}
+			line = file.readLine();
 		} catch (ex:Eof) {
-			f.close();
+			file.close();
+			file = null;
+			addGame();
+			return false;
 		}
 		
-		onProgress(1, games);
+		charsRead += line.length + 2;
+		
+		if (!tagName.canMatch) {
+			name = tagName.result;
+			tagName.clear();
+		}
+		
+		if (tagDescription.canMatch && tagDescription.match(line)) {
+		} else if (tagYear.canMatch && tagYear.match(line)) {
+		} else if (tagManufacturer.canMatch && tagManufacturer.match(line)) {
+		} else if (tagCategory.canMatch && tagCategory.match(line)) {
+		} else if (tagNPlayers.canMatch && tagNPlayers.match(line)) {
+		} else if (tagName.canMatch && tagName.match(line)) {
+			addGame();
+		}
+		
+		return true;
 	}
+	
+	function addGame() {
+		if (name.length == 0) return;
+		
+		games.push(new GameData(name, tagDescription.result, Std.parseInt(tagYear.result), tagManufacturer.result, tagCategory.result, Std.parseInt(tagNPlayers.result)));
+		tagDescription.clear();
+		tagYear.clear();
+		tagManufacturer.clear();
+		tagCategory.clear();
+		tagNPlayers.clear();
+	}
+	
+	function get_progress() return charsRead / numBytes;
 }
 
 
@@ -131,7 +139,6 @@ class Tag {
 	}
 	
 	public function match(string:String) {
-		// if this already is matched no need to look
 		var startIndex = string.indexOf(start);
 		if (startIndex == -1) return false;
 		var endIndex = string.indexOf(end, startIndex + start.length);

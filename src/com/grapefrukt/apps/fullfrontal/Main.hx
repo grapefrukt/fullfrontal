@@ -4,6 +4,7 @@ import cpp.vm.Thread;
 import haxe.Timer;
 import openfl.display.Sprite;
 import openfl.display.StageDisplayState;
+import openfl.events.Event;
 import openfl.Lib;
 import openfl.ui.Keyboard;
 import sys.io.Process;
@@ -18,6 +19,8 @@ class Main extends Sprite {
 
 	var hasGameRunning = false;
 	var fullscreenCheckTimer:Timer;
+	var parser:Parser;
+	
 	public static var home(default, null):String = '';
 	
 	public function new() {
@@ -28,9 +31,17 @@ class Main extends Sprite {
 		
 		home = Sys.getCwd();
 		
-		var p = new Parser();
+		parser = new Parser();
 		
 		checkFullscreen();
+		
+		addEventListener(Event.ENTER_FRAME, handleEnterFrame);
+	}
+	
+	function handleEnterFrame(e:Event) {
+		graphics.clear();
+		graphics.beginFill(0x000000);
+		graphics.drawRect(0, 122, 320 * parser.progress, 1);
 	}
 	
 	function checkFullscreen() {
