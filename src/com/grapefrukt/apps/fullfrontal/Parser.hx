@@ -4,6 +4,8 @@ import com.grapefrukt.apps.fullfrontal.Parser.Tag;
 import cpp.vm.Thread;
 import haxe.io.Eof;
 import haxe.Timer;
+import openfl.events.Event;
+import openfl.events.EventDispatcher;
 import openfl.Lib;
 import sys.io.File;
 import sys.FileSystem;
@@ -15,7 +17,7 @@ import sys.io.FileSeek;
  * @author Martin Jonasson, m@grapefrukt.com
  */
  
-class Parser {
+class Parser extends EventDispatcher {
 
 	var startTime:Int = 0;
 	var workThread:Thread;
@@ -31,11 +33,12 @@ class Parser {
 	var name:String;
 	
 	var parseTimer:Timer;
-	var games:Array<GameData>;
+	public var games(default, null):Array<GameData>;
 	
 	public var progress(get, never):Float;
 	
-	public function new() {			
+	public function new() {
+		super();
 		startTime = Lib.getTimer();
 		
 		prepare();
@@ -56,7 +59,7 @@ class Parser {
 		tagCategory = new Tag('<category>', '</category>');
 		tagNPlayers = new Tag('<nplayers>', '</nplayers>');
 		
-		var path = Main.home + '\\mame_filtered.xml';
+		var path = Main.home + '\\mame_small.xml';
 		var stat = FileSystem.stat(path);
 		
 		numBytes = stat.size;
@@ -70,6 +73,7 @@ class Parser {
 		if (file == null) {
 			parseTimer.stop();
 			trace('parsed ${games.length} entries in ' + (Lib.getTimer() - startTime) + 'ms');
+			dispatchEvent(new Event(Event.COMPLETE));
 		} else {
 			trace(Math.round(charsRead / numBytes * 100) + '%');
 		}

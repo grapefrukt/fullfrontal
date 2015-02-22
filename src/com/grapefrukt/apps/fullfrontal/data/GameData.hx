@@ -1,4 +1,5 @@
 package com.grapefrukt.apps.fullfrontal.data;
+import openfl.display.BitmapData;
 
 /**
  * ...
@@ -6,15 +7,14 @@ package com.grapefrukt.apps.fullfrontal.data;
  */
 class GameData {
 	
-	var name(default, null):String;
-	var description(default, null):String;
-	var year(default, null):Int;
-	var manufacturer(default, null):String;
-	var category(default, null):String;
-	var nplayers(default, null):Int;
+	public var name(default, null):String;
+	public var description(default, null):String;
+	public var year(default, null):Int;
+	public var manufacturer(default, null):String;
+	public var category(default, null):String;
+	public var nplayers(default, null):Int;
+	public var snap(default, null):BitmapData;
 	
-	public var next:GameData;
-
 	public function new(name:String, description:String, year:Int, manufacturer:String, category:String, nplayers:Int) {
 		this.name = name;
 		this.description = description;
@@ -22,6 +22,10 @@ class GameData {
 		this.manufacturer = manufacturer;
 		this.category = category;
 		this.nplayers = nplayers;
+	}
+	
+	public function generateSnap() {
+		snap = new BitmapData(60, 45, false, Std.int(Math.random() * 0xffffff));
 	}
 	
 	public function trace() {
