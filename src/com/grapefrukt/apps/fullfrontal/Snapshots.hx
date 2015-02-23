@@ -1,5 +1,5 @@
 package com.grapefrukt.apps.fullfrontal;
-import com.grapefrukt.apps.fullfrontal.data.GameData;
+import com.grapefrukt.apps.fullfrontal.models.Game;
 import haxe.Timer;
 import openfl.display.BitmapData;
 import openfl.geom.Matrix;
@@ -13,10 +13,12 @@ class Snapshots {
 
 	var path:String = 'c:\\files\\games\\emu\\mame\\snap\\';
 	var timer:Timer;
-	var queue:List<GameData>;
+	var queue:List<Game>;
+	var matrix:openfl.geom.Matrix;
 	
 	public function new() {
 		queue = new List();
+		matrix = new Matrix();
 	}
 	
 	function tick() {
@@ -36,12 +38,12 @@ class Snapshots {
 		if (game == null) return;
 		
 		var image = BitmapData.load(path + game.name + '.png');
-		var m = new Matrix();
-		m.scale(game.snap.width / image.width, game.snap.height / image.height);
-		game.snap.draw(image, m, null, null, null, true);
+		matrix.identity();
+		matrix.scale(game.snap.width / image.width, game.snap.height / image.height);
+		game.snap.draw(image, matrix, null, null, null, true);
 	}
 	
-	public function request(game:GameData) {
+	public function request(game:Game) {
 		game.generateSnap();
 		queue.add(game);
 		

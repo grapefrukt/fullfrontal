@@ -1,16 +1,14 @@
-package com.grapefrukt.apps.fullfrontal;
-import com.grapefrukt.apps.fullfrontal.data.GameData;
-import com.grapefrukt.apps.fullfrontal.Parser.Tag;
-import cpp.vm.Thread;
+package com.grapefrukt.apps.fullfrontal.utils;
+import com.grapefrukt.apps.fullfrontal.models.Collection;
+import com.grapefrukt.apps.fullfrontal.models.Game;
 import haxe.io.Eof;
 import haxe.Timer;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.Lib;
-import sys.io.File;
 import sys.FileSystem;
+import sys.io.File;
 import sys.io.FileInput;
-import sys.io.FileSeek;
 
 /**
  * ...
@@ -20,38 +18,38 @@ import sys.io.FileSeek;
 class Parser extends EventDispatcher {
 
 	var startTime:Int = 0;
-	var workThread:Thread;
+	
 	var tagName:Tag;
 	var tagDescription:Tag;
 	var tagYear:Tag;
 	var tagManufacturer:Tag;
 	var tagCategory:Tag;
 	var tagNPlayers:Tag;
+	
 	var file:FileInput;
 	var numBytes:Int;
 	var charsRead:Int;
 	var name:String;
 	
 	var parseTimer:Timer;
-	public var games(default, null):Array<GameData>;
+	var games:Collection;
+	var preloadCount:Int;
 	
 	public var progress(get, never):Float;
 	
-	public function new() {
+	public function new(games:Collection, preloadCount:Int = 12) {
 		super();
+		this.preloadCount = preloadCount;
+		this.games = games;
+		
 		startTime = Lib.getTimer();
 		
 		prepare();
-		
 		parseTimer = new Timer(16);
 		parseTimer.run = parse;
-		
-		parse();
 	}
 	
 	private function prepare() {
-		games = [];
-		
 		tagName = new Tag('<game name="', '"');
 		tagDescription = new Tag('<description>', '</description>');
 		tagYear = new Tag('<year>', '</year>');
@@ -59,7 +57,8 @@ class Parser extends EventDispatcher {
 		tagCategory = new Tag('<category>', '</category>');
 		tagNPlayers = new Tag('<nplayers>', '</nplayers>');
 		
-		var path = Main.home + '\\mame_small.xml';
+		//var path = Main.home + '\\mame_small.xml';
+		var path = Main.home + '\\mame_filtered.xml';
 		var stat = FileSystem.stat(path);
 		
 		numBytes = stat.size;
@@ -72,10 +71,10 @@ class Parser extends EventDispatcher {
 		for (i in 0 ... 2000) if (!_parse()) break;
 		if (file == null) {
 			parseTimer.stop();
-			trace('parsed ${games.length} entries in ' + (Lib.getTimer() - startTime) + 'ms');
-			dispatchEvent(new Event(Event.COMPLETE));
+			trace('parsed ${games.numGames} entries in ' + (Lib.getTimer() - startTime) + 'ms');
+			dispatchEvent(new ParserEvent(ParserEvent.COMPLETE, 1));
 		} else {
-			trace(Math.round(charsRead / numBytes * 100) + '%');
+			//trace(Math.round(charsRead / numBytes * 100) + '%');
 		}
 	}
 	
@@ -113,19 +112,25 @@ class Parser extends EventDispatcher {
 	function addGame() {
 		if (name.length == 0) return;
 		
-		games.push(new GameData(name, tagDescription.result, Std.parseInt(tagYear.result), tagManufacturer.result, tagCategory.result, Std.parseInt(tagNPlayers.result)));
+		var category = games.getCategory(tagCategory.result);
+		var game = new Game(name, tagDescription.result, Std.parseInt(tagYear.result), tagManufacturer.result, category, Std.parseInt(tagNPlayers.result));
+		games.addGame(game);
+		
 		tagDescription.clear();
 		tagYear.clear();
 		tagManufacturer.clear();
 		tagCategory.clear();
 		tagNPlayers.clear();
+		
+		if (games.numGames == preloadCount) dispatchEvent(new ParserEvent(ParserEvent.READY, progress));
+		if (games.numGames % 5 == 0) dispatchEvent(new ParserEvent(ParserEvent.PROGRESS, progress));
 	}
 	
 	function get_progress() return charsRead / numBytes;
 }
 
 
-class Tag {
+private class Tag {
 	
 	var start:String;
 	var end:String;
@@ -152,4 +157,18 @@ class Tag {
 	}
 	
 	inline function get_canMatch() return result.length == 0;
+}
+
+class ParserEvent extends Event {
+	
+	public static inline var PROGRESS	:String = 'launchevent_progress';
+	public static inline var READY		:String = 'launchevent_ready';
+	public static inline var COMPLETE	:String = 'launchevent_complete';
+	
+	public var progress(default, null):Float;
+	
+	public function new(type:String, progress:Float) {
+		super(type);
+		this.progress = progress;
+	}
 }

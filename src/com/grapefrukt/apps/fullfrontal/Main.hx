@@ -1,5 +1,10 @@
 package com.grapefrukt.apps.fullfrontal;
 
+import com.grapefrukt.apps.fullfrontal.models.Collection;
+import com.grapefrukt.apps.fullfrontal.utils.Parser;
+import com.grapefrukt.apps.fullfrontal.utils.Fullscreener;
+import com.grapefrukt.apps.fullfrontal.utils.Launcher;
+import com.grapefrukt.apps.fullfrontal.utils.Resizer;
 import com.grapefrukt.utils.CrashReporter;
 import cpp.vm.Thread;
 import haxe.Timer;
@@ -21,46 +26,50 @@ import openfl.events.KeyboardEvent;
 class Main extends Sprite {
 
 	var hasGameRunning = false;
-	var fullscreenCheckTimer:Timer;
 	var parser:Parser;
+	var launcher:Launcher;
+	var collection:Collection;
 	var snapshots:Snapshots;
 	
 	public static var home(default, null):String = '';
 	
 	public function new() {
-		super();
-		
+		super();		
 		CrashReporter.init('C:\\files\\dev\\fullfrontal\\src\\');
 		
-		stage.scaleMode = StageScaleMode.SHOW_ALL;
+		launcher = new Launcher('c:\\files\\games\\emu\\mame', 'mame64.exe');
 		
-		stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
-		fullscreenCheckTimer = new Timer(2000);
-		fullscreenCheckTimer.run = checkFullscreen;
+		Fullscreener.init(launcher);
+		Resizer.init(this);
 		
 		home = Sys.getCwd();
 		
-		parser = new Parser();
-		parser.addEventListener(Event.COMPLETE, handleParseComplete);
+		collection = new Collection();
+		
+		parser = new Parser(collection, 12);
+		//parser.addEventListener(ParserEvent.COMPLETE, handleParseComplete);
+		parser.addEventListener(ParserEvent.READY, handleParseReady);
+		//parser.addEventListener(ParserEvent.PROGRESS, handleParseProgress);
 		
 		snapshots = new Snapshots();
 		
-		checkFullscreen();
-		
 		addEventListener(Event.ENTER_FRAME, handleEnterFrame);
+		stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
 	}
 	
-	function handleParseComplete(e:Event) {
-		trace('handleParseComplete');
+	function handleParseReady(e:Event) {
+		trace('handleParseReady');
+		
+		graphics.clear();
 		
 		var t = Lib.getTimer();
 		var i = 0;
-		for (x in 0 ... 7) {
-			for (y in 0 ... 7) {
-				snapshots.request(parser.games[i]);
-				var b = new Bitmap(parser.games[i].snap);
-				b.x = parser.games[i].snap.width * x;
-				b.y = parser.games[i].snap.height * y;
+		for (x in 0 ... 3) {
+			for (y in 0 ... 4) {
+				snapshots.request(collection.games[i]);
+				var b = new Bitmap(collection.games[i].snap);
+				b.x = 18 + (collection.games[i].snap.width  + 8) * x;
+				b.y = (collection.games[i].snap.height + 8) * y;
 				addChild(b);
 				i++;
 			}
@@ -69,16 +78,10 @@ class Main extends Sprite {
 	}
 	
 	function handleEnterFrame(e:Event) {
-		
-		if (parser.progress >= 1) return;
 		graphics.clear();
+		if (parser.progress >= 1) return;
 		graphics.beginFill(0x000000);
-		graphics.drawRect(0, 122, 320 * parser.progress, 1);
-	}
-	
-	function checkFullscreen() {
-		//trace('checkFullscreen', hasGameRunning, stage.displayState);
-		stage.displayState = hasGameRunning ? StageDisplayState.NORMAL : StageDisplayState.FULL_SCREEN;
+		graphics.drawRect(5, 5, 2, 234 * parser.progress);
 	}
 	
 	function handleKeyDown(e:KeyboardEvent) {
@@ -86,36 +89,9 @@ class Main extends Sprite {
 			openfl.system.System.exit(0);
 			return;
 		}
-		if (hasGameRunning) return;
-		
 		if (e.keyCode != Keyboard.ENTER) return;
 		
-		trace('thread created');
-		hasGameRunning = true;
-		checkFullscreen();
-		
-		var t = Thread.create(launch);
-		t.sendMessage(onComplete);
+		launcher.requestLaunch(collection.games[0]);
 	}
 	
-	function onComplete() {
-		trace('thread completed');
-		hasGameRunning = false;
-		checkFullscreen();
-	}
-	
-	static function launch() {
-		var onComplete:Void->Void = Thread.readMessage(true);
-		
-		trace('game launched', Lib.getTimer());
-		
-		Sys.setCwd('c:\\files\\games\\emu\\mame');
-		var p = new Process('mame64.exe', ['pang']);
-		// this call blocks until the process closes
-		var exitCode = p.exitCode();
-		
-		trace('game closed?', Lib.getTimer());
-		
-		onComplete();
-	}
 }
