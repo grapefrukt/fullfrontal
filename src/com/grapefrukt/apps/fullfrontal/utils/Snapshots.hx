@@ -14,7 +14,9 @@ class Snapshots {
 	var path:String = 'c:\\files\\games\\emu\\mame\\snap\\';
 	var timer:Timer;
 	var queue:List<Game>;
-	var matrix:openfl.geom.Matrix;
+	var matrix:Matrix;
+	
+	var numLoaded:Int = 0;
 	
 	public function new() {
 		queue = new List();
@@ -25,32 +27,35 @@ class Snapshots {
 		var t = Lib.getTimer();
 		for (i in 0 ... 4) pop();
 		
-		trace(Lib.getTimer() - t);
-		
 		if (queue.length == 0) {
 			timer.stop();
 			timer = null;
 		}
+		
+		trace('$numLoaded snaps loaded');
 	}
 	
 	function pop() {
 		var game = queue.pop();
 		if (game == null) return;
+		if (game.snap == null) return;
 		
 		var image = BitmapData.load(path + game.name + '.png');
-		if (image != null && game.snap != null) {
+		if (image != null) {
+			numLoaded++;
 			matrix.identity();
 			matrix.scale(game.snap.width / image.width, game.snap.height / image.height);
 			game.snap.draw(image, matrix, null, null, null, true);
 			image.dispose();
-		} else if (image == null && game.snap != null) {
+		} else {
+			trace('missing snap for ${game.name}');
 			game.snap.fillRect(game.snap.rect, 0x000000);
 		}
 	}
 	
-	public function request(game:Game) {
+	public function request(game:Game, highPriority:Bool) {
 		game.generateSnap();
-		queue.add(game);
+		highPriority ? queue.push(game) : queue.add(game);
 		
 		if (timer == null) {
 			timer = new Timer(16);
@@ -59,7 +64,7 @@ class Snapshots {
 	}
 	
 	public function cancelRequest(game:Game) {
-		queue.remove(game);
+		//queue.remove(game);
 	}
 	
 }

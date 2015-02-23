@@ -47,11 +47,28 @@ class GameListView extends Sprite {
 	
 	public function update() {
 		inputRepeatY.update();
-		scrollY += inputRepeatY.getMovement();
+		inputRepeatX.update();
+		
+		selectionX += inputRepeatX.getMovement();
+		if (selectionX < 0) selectionX = cols - 1;
+		if (selectionX > cols - 1) selectionX = 0;
+		
+		selectionY += inputRepeatY.getMovement();
+		
+		while (selectionY > 1) {
+			scrollY++;
+			selectionY--;
+		}
+		
+		while (selectionY < 0) {
+			scrollY--;
+			selectionY++;
+		}
 		
 		if (scrollY < 0) scrollY = 0;
 		if (scrollY > maxScrollY) scrollY = maxScrollY;
-		for (view in views) view.update(selectionX, Math.floor(scrollY));
+		
+		for (view in views) view.update(selectionX, selectionY, Math.floor(scrollY));
 	}
 	
 	function get_maxScrollY() return Std.int(collection.games.length / cols) - 2;

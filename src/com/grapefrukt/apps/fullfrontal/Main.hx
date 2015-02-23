@@ -58,12 +58,16 @@ class Main extends Sprite {
 		collection = new Collection();
 		
 		parser = new Parser(collection, 12);
-		//parser.addEventListener(ParserEvent.COMPLETE, handleParseComplete);
+		parser.addEventListener(ParserEvent.COMPLETE, handleParseComplete);
 		//parser.addEventListener(ParserEvent.PROGRESS, handleParseProgress);
 		parser.addEventListener(ParserEvent.READY, handleParseReady);
 		
 		addEventListener(Event.ENTER_FRAME, handleEnterFrame);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+	}
+	
+	function handleParseComplete(e:ParserEvent) {
+		for (game in collection.games) game.generateSnap(false);
 	}
 	
 	function handleParseReady(e:Event) {

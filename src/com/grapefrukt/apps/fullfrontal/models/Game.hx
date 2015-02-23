@@ -26,16 +26,14 @@ class Game {
 		this.nplayers = nplayers;
 	}
 	
-	public function generateSnap() {
+	public function generateSnap(highPriority:Bool = true) {
 		if (snap != null) return;
 		snap = new BitmapData(Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H, false, Std.int(Math.random() * 0xffffff));
-		collection.snapshots.request(this);
+		collection.snapshots.request(this, highPriority);
 	}
 	
 	public function disposeSnap() {
-		collection.snapshots.cancelRequest(this);
-		//snap.dispose();
-		//snap = null;
+		//collection.snapshots.cancelRequest(this);
 	}
 	
 	public function trace() {

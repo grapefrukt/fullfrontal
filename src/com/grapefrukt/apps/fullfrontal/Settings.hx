@@ -26,4 +26,5 @@ class Settings {
 	public static var VIEW_GAME_H:Int = VIEW_GAME_SNAP_H + VIEW_GAME_MARGIN;
 	
 	static public inline var INPUT_DEADZONE:Float = .25;
+	static public inline var COLOR_BASE:Int = 0xc9db00;
 }

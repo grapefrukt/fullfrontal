@@ -3,6 +3,8 @@ package com.grapefrukt.apps.fullfrontal.views;
 import com.grapefrukt.apps.fullfrontal.models.Collection;
 import com.grapefrukt.apps.fullfrontal.models.Game;
 import openfl.display.Bitmap;
+import openfl.display.JointStyle;
+import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 
@@ -23,6 +25,7 @@ class GameView extends Sprite {
 	var game:Game;
 	
 	var bitmap:Bitmap;
+	var selection:Shape;
 
 	public function new(collection:Collection, index:Int, offsetX:Int, offsetY:Int) {
 		super();
@@ -39,18 +42,25 @@ class GameView extends Sprite {
 		//text.selectable = false;
 		//addChild(text);
 		
-		graphics.beginFill(Std.int(Math.random() * 0xffffff));
-		graphics.drawRect(0, 0, Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H);
+		selection = new Shape();
+		selection.graphics.lineStyle(3, Settings.COLOR_BASE, 1, false, null, null, JointStyle.MITER);
+		selection.graphics.drawRect(0, 0, Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H);
+		addChild(selection);
+		
+		//graphics.beginFill(Std.int(Math.random() * 0xffffff));
+		//graphics.drawRect(0, 0, Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H);
 	}
 	
-	public function update(selectionX:Int, selectionY:Int) {
-		var row = selectionY - offsetY + 2;
+	public function update(selectionX:Int, selectionY:Int, scrollY:Int) {
+		var row = scrollY - offsetY + 2;
 		var page = Math.floor(row / 4);
 		var scrollRow = row - page * 4;
 		var gameIndex = page * 12 + index;
+		
+		selection.visible = (scrollY + selectionY) * 3 + selectionX == gameIndex;
+		
 		if (lastGameIndex != gameIndex) refresh(gameIndex);
 		
-		//text.text = '$index\n$page\n$gameIndex';
 		x = offsetX * Settings.VIEW_GAME_W;
 		y = ( -scrollRow + 2) * Settings.VIEW_GAME_H;
 	}
