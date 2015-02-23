@@ -37,7 +37,7 @@ class Parser extends EventDispatcher {
 	
 	public var progress(get, never):Float;
 	
-	public function new(games:Collection, preloadCount:Int = 12) {
+	public function new(games:Collection, preloadCount:Int = 200) {
 		super();
 		this.preloadCount = preloadCount;
 		this.games = games;
@@ -68,7 +68,7 @@ class Parser extends EventDispatcher {
 	}
 	
 	private function parse() {
-		for (i in 0 ... 2000) if (!_parse()) break;
+		for (i in 0 ... 500) if (!_parse()) break;
 		if (file == null) {
 			parseTimer.stop();
 			trace('parsed ${games.numGames} entries in ' + (Lib.getTimer() - startTime) + 'ms');
@@ -112,8 +112,14 @@ class Parser extends EventDispatcher {
 	function addGame() {
 		if (name.length == 0) return;
 		
-		var category = games.getCategory(tagCategory.result);
-		var game = new Game(name, tagDescription.result, Std.parseInt(tagYear.result), tagManufacturer.result, category, Std.parseInt(tagNPlayers.result));
+		var category = games.getCategory(replaceEntities(tagCategory.result));
+		var game = new Game(	replaceEntities(name), 
+								replaceEntities(tagDescription.result), 
+								Std.parseInt(tagYear.result), 
+								replaceEntities(tagManufacturer.result), 
+								category, 
+								Std.parseInt(tagNPlayers.result)
+							);
 		games.addGame(game);
 		
 		tagDescription.clear();
@@ -124,6 +130,14 @@ class Parser extends EventDispatcher {
 		
 		if (games.numGames == preloadCount) dispatchEvent(new ParserEvent(ParserEvent.READY, progress));
 		if (games.numGames % 5 == 0) dispatchEvent(new ParserEvent(ParserEvent.PROGRESS, progress));
+	}
+	
+	function replaceEntities(string:String) {
+		string = StringTools.replace(string, '&amp;', '&');
+		string = StringTools.replace(string, '&apos;', '\'');
+		string = StringTools.replace(string, '&gt;', '<');
+		string = StringTools.replace(string, '&lt;', '>');
+		return string;
 	}
 	
 	function get_progress() return charsRead / numBytes;

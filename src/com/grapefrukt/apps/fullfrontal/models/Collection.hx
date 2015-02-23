@@ -12,7 +12,6 @@ class Collection {
 	var categoryMap:Map<String, Category>;
 
 	public var numGames(get, never):Int;
-	
 	public var snapshots(default, null):Snapshots;
 	
 	public function new() {
@@ -24,7 +23,9 @@ class Collection {
 	
 	public function addGame(game:Game) {
 		game.setCollection(this);
-		games.push(game);
+		var i = 0;
+		while (i < games.length && game.description > games[i].description) i++;
+		games.insert(i, game);
 	}
 	
 	public function getCategory(name:String) {

@@ -28,7 +28,7 @@ class Game {
 	
 	public function generateSnap(highPriority:Bool = true) {
 		if (snap != null) return;
-		snap = new BitmapData(Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H, false, Std.int(Math.random() * 0xffffff));
+		snap = new BitmapData(Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H, false, Settings.COLOR_SNAP);
 		collection.snapshots.request(this, highPriority);
 	}
 	

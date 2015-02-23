@@ -59,11 +59,11 @@ class Launcher extends EventDispatcher {
 	static function launch() {
 		var path:String = Thread.readMessage(true);
 		var executable:String = Thread.readMessage(true);
-		var args:String = Thread.readMessage(true);
+		var game:String = Thread.readMessage(true);
 		var onComplete:Void->Void = Thread.readMessage(true);
 		
 		Sys.setCwd(path);
-		var p = new Process(executable, ['pang']);
+		var p = new Process(executable, [game]);
 		// this call blocks until the process closes
 		var exitCode = p.exitCode();
 		

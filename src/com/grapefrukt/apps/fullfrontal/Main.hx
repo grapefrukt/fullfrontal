@@ -7,10 +7,12 @@ import com.grapefrukt.apps.fullfrontal.utils.Launcher;
 import com.grapefrukt.apps.fullfrontal.utils.Resizer;
 import com.grapefrukt.apps.fullfrontal.views.GameListView;
 import com.grapefrukt.utils.CrashReporter;
+import com.grapefrukt.utils.inputter.events.InputterEvent;
 import com.grapefrukt.utils.inputter.Inputter;
 import com.grapefrukt.utils.inputter.InputterPlayer;
 import com.grapefrukt.utils.inputter.plugins.InputterPluginJoystick;
 import com.grapefrukt.utils.inputter.plugins.InputterPluginKeyboard;
+import com.grapefrukt.utils.SettingsLoader;
 import cpp.vm.Thread;
 import haxe.Timer;
 import openfl.display.Bitmap;
@@ -20,6 +22,7 @@ import openfl.display.StageScaleMode;
 import openfl.events.Event;
 import openfl.Lib;
 import openfl.ui.Keyboard;
+import openfl.ui.Mouse;
 import sys.io.Process;
 import openfl.events.KeyboardEvent;
 
@@ -36,6 +39,7 @@ class Main extends Sprite {
 	var collection:Collection;
 	var gameListView:GameListView;
 	var input:InputterPlayer;
+	var settings:SettingsLoader;
 	
 	public static var home(default, null):String = '';
 	
@@ -43,10 +47,22 @@ class Main extends Sprite {
 		super();		
 		CrashReporter.init('C:\\files\\dev\\fullfrontal\\src\\');
 		
+		Mouse.hide();
+		
+		settings = new SettingsLoader('config/values.cfg', Settings);
+		settings.addEventListener(Event.COMPLETE, function(e:Event) { init(); } );
+		settings.reload();
+	}
+	
+	function init() {
+		trace('init');
+		
 		var inputter = new Inputter(stage);
 		input = inputter.createPlayer(4, 10);
 		input.addPlugin(new InputterPluginJoystick(0, [0, 1, 2, 3], [0, 1, 2, 3 ]));
 		input.addPlugin(new InputterPluginKeyboard([Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN], [Keyboard.Z, Keyboard.X, Keyboard.C, Keyboard.V]));		
+		
+		input.addEventListener(InputterEvent.BUTTON_DOWN, handleButtonDown);
 		
 		launcher = new Launcher(Settings.PATH_MAME);
 		
@@ -66,6 +82,11 @@ class Main extends Sprite {
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
 	}
 	
+	function handleButtonDown(e:InputterEvent) {
+		var game = collection.getGameByIndex(gameListView.selectedIndex);
+		launcher.requestLaunch(game);
+	}
+	
 	function handleParseComplete(e:ParserEvent) {
 		for (game in collection.games) game.generateSnap(false);
 	}
@@ -81,13 +102,7 @@ class Main extends Sprite {
 	}
 	
 	function handleKeyDown(e:KeyboardEvent) {
-		if (e.keyCode == Keyboard.ESCAPE) {
-			openfl.system.System.exit(0);
-			return;
-		}
-		if (e.keyCode != Keyboard.ENTER) return;
-		
-		launcher.requestLaunch(collection.games[0]);
+		if (e.keyCode == Keyboard.Q) openfl.system.System.exit(0);
 	}
 	
 }

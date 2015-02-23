@@ -8,12 +8,13 @@
 	<!-- output -->
 	<app main="com.grapefrukt.apps.fullfrontal.Main" file="fullfrontal" path="bin" />
 	
-	<window background="#ff00ff" fps="60" />
-	<window width="320" height="400" />
+	<window background="#000000" fps="60" />
+	<window width="320" height="240" />
 	<window orientation="landscape" vsync="true" antialiasing="0" if="cpp" />
 	
 	<!-- classpath, haxe libs -->
 	<source path="src" />
+	<source path="lib" />
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="grapetools" />
@@ -21,7 +22,11 @@
 	
 	<!-- assets -->
 	<icon path="assets/openfl.svg" />
-	<assets path="assets/img" rename="img" />
+	<assets path="assets/fonts"  rename="fonts"	 include="*.ttf" />
+	<assets path="assets/images" rename="images" include="*.png" />
+	<assets path="assets/config" rename="config" include="*.cfg" />
+	
+	<haxedef name="RENDER_TILE" />
 	
 	<!-- optimize output
 	<haxeflag name="-dce full" /> -->

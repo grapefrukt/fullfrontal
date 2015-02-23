@@ -17,11 +17,11 @@ class InputRepeater {
 	var timeHeld:Int = 0;
 	var lastUpdate:Int = 0;
 	
-	var timeToRepeat:Int = 200;
-	var timeToMax:Int = 1000;
+	var timeToRepeat:Int = Settings.INPUT_TIME_TO_REPEAT;
+	var timeToMax:Int = Settings.INPUT_TIME_TO_MAX;
 	
-	var repeatSpeedStart:Float = .1;
-	var repeatSpeedEnd:Float = 10;
+	var repeatSpeedStart:Float = Settings.INPUT_REPEAT_SPEED_MIN;
+	var repeatSpeedEnd:Float = Settings.INPUT_REPEAT_SPEED_MAX;
 	
 	public function new(input:InputterPlayer, axis:Int) {
 		this.axis = axis;

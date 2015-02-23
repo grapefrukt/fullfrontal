@@ -51,13 +51,13 @@ class GameView extends Sprite {
 		//graphics.drawRect(0, 0, Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H);
 	}
 	
-	public function update(selectionX:Int, selectionY:Int, scrollY:Int) {
+	public function update(selectionX:Int, selectionY:Int, scrollY:Int, selectedIndex:Int) {
 		var row = scrollY - offsetY + 2;
 		var page = Math.floor(row / 4);
 		var scrollRow = row - page * 4;
 		var gameIndex = page * 12 + index;
 		
-		selection.visible = (scrollY + selectionY) * 3 + selectionX == gameIndex;
+		selection.visible = selectedIndex == gameIndex;
 		
 		if (lastGameIndex != gameIndex) refresh(gameIndex);
 		

@@ -1,10 +1,14 @@
 package com.grapefrukt.apps.fullfrontal.views;
 
+import bitmapFont.BitmapTextField;
 import com.grapefrukt.apps.fullfrontal.models.Collection;
 import com.grapefrukt.apps.fullfrontal.utils.InputRepeater;
 import com.grapefrukt.apps.fullfrontal.views.GameView;
+import com.grapefrukt.utils.inputter.events.InputterEvent;
 import com.grapefrukt.utils.inputter.InputterPlayer;
+import openfl.display.Shape;
 import openfl.display.Sprite;
+import openfl.text.TextField;
 
 /**
  * ...
@@ -26,6 +30,13 @@ class GameListView extends Sprite {
 	var inputRepeatX:InputRepeater;
 	
 	var maxScrollY(get, never):Int;
+	public var selectedIndex(get, never):Int;
+	var lastSelectedIndex = -1;
+	
+	var text:BitmapTextField;
+	
+	var fadeTop:Shape;
+	var fadeBottom:Shape;
 
 	public function new(collection:Collection, input:InputterPlayer) {
 		super();
@@ -42,7 +53,20 @@ class GameListView extends Sprite {
 			var view = new GameView(collection, i, i % cols, Math.floor(i / cols));
 			views.push(view);
 			addChild(view);
-		}	
+		}
+		
+		fadeTop = new Shape();
+		fadeTop.graphics.beginFill(0, .5);
+		fadeTop.graphics.drawRect(0, -y, Settings.STAGE_W, 40);
+		addChild(fadeTop);
+		
+		fadeBottom = new Shape();
+		fadeBottom.graphics.beginFill(0, .5);
+		fadeBottom.graphics.drawRect(0, Settings.STAGE_H - 50 - y, Settings.STAGE_W, 50);
+		addChild(fadeBottom);
+		
+		text = FontSettings.getDefaultTextField(Settings.STAGE_W);
+		addChild(text);
 	}
 	
 	public function update() {
@@ -68,9 +92,19 @@ class GameListView extends Sprite {
 		if (scrollY < 0) scrollY = 0;
 		if (scrollY > maxScrollY) scrollY = maxScrollY;
 		
-		for (view in views) view.update(selectionX, selectionY, Math.floor(scrollY));
+		for (view in views) view.update(selectionX, selectionY, Math.floor(scrollY), selectedIndex);
+		
+		if (lastSelectedIndex == selectedIndex) return;
+		lastSelectedIndex = selectedIndex;
+		
+		var selectedGame = collection.getGameByIndex(selectedIndex);
+		if (selectedGame == null) return;
+		text.text = selectedGame.description;
+		text.x = -x;
+		text.y = Settings.STAGE_H - 42 - y;
 	}
 	
 	function get_maxScrollY() return Std.int(collection.games.length / cols) - 2;
+	function get_selectedIndex() return Math.floor((scrollY + selectionY) * cols + selectionX);
 	
 }

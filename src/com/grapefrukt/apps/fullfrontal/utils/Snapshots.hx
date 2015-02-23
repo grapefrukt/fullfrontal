@@ -10,8 +10,7 @@ import openfl.Lib;
  * @author Martin Jonasson, m@grapefrukt.com
  */
 class Snapshots {
-
-	var path:String = 'c:\\files\\games\\emu\\mame\\snap\\';
+	
 	var timer:Timer;
 	var queue:List<Game>;
 	var matrix:Matrix;
@@ -40,7 +39,7 @@ class Snapshots {
 		if (game == null) return;
 		if (game.snap == null) return;
 		
-		var image = BitmapData.load(path + game.name + '.png');
+		var image = BitmapData.load(Settings.PATH_SNAPS + '/' + game.name + '.png');
 		if (image != null) {
 			numLoaded++;
 			matrix.identity();
