@@ -9,7 +9,7 @@
 	<app main="com.grapefrukt.apps.fullfrontal.Main" file="fullfrontal" path="bin" />
 	
 	<window background="#ff00ff" fps="60" />
-	<window width="320" height="244" />
+	<window width="320" height="400" />
 	<window orientation="landscape" vsync="true" antialiasing="0" if="cpp" />
 	
 	<!-- classpath, haxe libs -->

@@ -52,9 +52,9 @@ class GameListView extends Sprite {
 		
 		if (scrollY < 0) scrollY = 0;
 		if (scrollY > maxScrollY) scrollY = maxScrollY;
-		for (view in views) view.setSelection(selectionX, Math.floor(scrollY));
+		for (view in views) view.update(selectionX, Math.floor(scrollY));
 	}
 	
-	function get_maxScrollY() return Std.int(collection.games.length / cols);
+	function get_maxScrollY() return Std.int(collection.games.length / cols) - 1;
 	
 }

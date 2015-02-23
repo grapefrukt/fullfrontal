@@ -1,4 +1,5 @@
 package com.grapefrukt.apps.fullfrontal.utils;
+import haxe.Timer;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 import openfl.events.Event;
@@ -15,6 +16,9 @@ class Resizer {
 	public static function init(root:Sprite) {
 		Resizer.root = root;
 		Lib.current.stage.addEventListener(Event.RESIZE, handleResize);
+		Timer.delay(function() {
+			handleResize(null);
+		}, 200);
 	}
 	
 	static function handleResize(e:Event) {
