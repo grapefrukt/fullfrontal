@@ -57,8 +57,8 @@ class Parser extends EventDispatcher {
 		tagCategory = new Tag('<category>', '</category>');
 		tagNPlayers = new Tag('<nplayers>', '</nplayers>');
 		
-		//var path = Main.home + '\\mame_small.xml';
-		var path = Main.home + '\\mame_filtered.xml';
+		Sys.setCwd(Main.home);
+		var path = Settings.PATH_XML;
 		var stat = FileSystem.stat(path);
 		
 		numBytes = stat.size;

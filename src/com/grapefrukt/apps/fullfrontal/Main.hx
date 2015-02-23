@@ -5,6 +5,7 @@ import com.grapefrukt.apps.fullfrontal.utils.Parser;
 import com.grapefrukt.apps.fullfrontal.utils.Fullscreener;
 import com.grapefrukt.apps.fullfrontal.utils.Launcher;
 import com.grapefrukt.apps.fullfrontal.utils.Resizer;
+import com.grapefrukt.apps.fullfrontal.views.GameListView;
 import com.grapefrukt.utils.CrashReporter;
 import cpp.vm.Thread;
 import haxe.Timer;
@@ -30,6 +31,7 @@ class Main extends Sprite {
 	var launcher:Launcher;
 	var collection:Collection;
 	var snapshots:Snapshots;
+	var gameListView:GameListView;
 	
 	public static var home(default, null):String = '';
 	
@@ -37,7 +39,7 @@ class Main extends Sprite {
 		super();		
 		CrashReporter.init('C:\\files\\dev\\fullfrontal\\src\\');
 		
-		launcher = new Launcher('c:\\files\\games\\emu\\mame', 'mame64.exe');
+		launcher = new Launcher(Settings.PATH_MAME);
 		
 		Fullscreener.init(launcher);
 		Resizer.init(this);
@@ -48,8 +50,8 @@ class Main extends Sprite {
 		
 		parser = new Parser(collection, 12);
 		//parser.addEventListener(ParserEvent.COMPLETE, handleParseComplete);
-		parser.addEventListener(ParserEvent.READY, handleParseReady);
 		//parser.addEventListener(ParserEvent.PROGRESS, handleParseProgress);
+		parser.addEventListener(ParserEvent.READY, handleParseReady);
 		
 		snapshots = new Snapshots();
 		
@@ -59,22 +61,8 @@ class Main extends Sprite {
 	
 	function handleParseReady(e:Event) {
 		trace('handleParseReady');
-		
-		graphics.clear();
-		
-		var t = Lib.getTimer();
-		var i = 0;
-		for (x in 0 ... 3) {
-			for (y in 0 ... 4) {
-				snapshots.request(collection.games[i]);
-				var b = new Bitmap(collection.games[i].snap);
-				b.x = 18 + (collection.games[i].snap.width  + 8) * x;
-				b.y = (collection.games[i].snap.height + 8) * y;
-				addChild(b);
-				i++;
-			}
-		}
-		trace('loaded $i snaps in ' + (Lib.getTimer() - t));
+		gameListView = new GameListView(collection);
+		addChild(gameListView);
 	}
 	
 	function handleEnterFrame(e:Event) {

@@ -34,7 +34,7 @@ class Fullscreener {
 	
 	static public function check() {
 		//trace('checkFullscreen', hasGameRunning, stage.displayState);
-		Lib.current.stage.displayState = launcher.hasGameRunning ? StageDisplayState.NORMAL : StageDisplayState.FULL_SCREEN;
+		//Lib.current.stage.displayState = launcher.hasGameRunning ? StageDisplayState.NORMAL : StageDisplayState.FULL_SCREEN;
 	}
 	
 }

@@ -22,10 +22,12 @@ class Launcher extends EventDispatcher {
 	static inline var DELAY_LAUNCH:Int = 200;
 	static inline var DELAY_CLOSE:Int = 200;
 
-	public function new(path:String, executable:String) {
+	public function new(path:String) {
 		super();
-		this.path = path;
-		this.executable = executable;
+		
+		var split = path.split('/');
+		this.executable = split.pop();
+		this.path = split.join('/');
 	}
 	
 	public function requestLaunch(game:Game) {

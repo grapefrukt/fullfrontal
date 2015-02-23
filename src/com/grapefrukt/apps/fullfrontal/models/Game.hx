@@ -25,7 +25,7 @@ class Game {
 	}
 	
 	public function generateSnap() {
-		snap = new BitmapData(89, 67, false, Std.int(Math.random() * 0xffffff));
+		snap = new BitmapData(Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H, false, Std.int(Math.random() * 0xffffff));
 	}
 	
 	public function trace() {
