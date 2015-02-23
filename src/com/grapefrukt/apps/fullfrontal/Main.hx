@@ -7,6 +7,10 @@ import com.grapefrukt.apps.fullfrontal.utils.Launcher;
 import com.grapefrukt.apps.fullfrontal.utils.Resizer;
 import com.grapefrukt.apps.fullfrontal.views.GameListView;
 import com.grapefrukt.utils.CrashReporter;
+import com.grapefrukt.utils.inputter.Inputter;
+import com.grapefrukt.utils.inputter.InputterPlayer;
+import com.grapefrukt.utils.inputter.plugins.InputterPluginJoystick;
+import com.grapefrukt.utils.inputter.plugins.InputterPluginKeyboard;
 import cpp.vm.Thread;
 import haxe.Timer;
 import openfl.display.Bitmap;
@@ -32,12 +36,18 @@ class Main extends Sprite {
 	var collection:Collection;
 	var snapshots:Snapshots;
 	var gameListView:GameListView;
+	var input:InputterPlayer;
 	
 	public static var home(default, null):String = '';
 	
 	public function new() {
 		super();		
 		CrashReporter.init('C:\\files\\dev\\fullfrontal\\src\\');
+		
+		var inputter = new Inputter(stage);
+		input = inputter.createPlayer(4, 10);
+		input.addPlugin(new InputterPluginJoystick(0, [0, 1, 2, 3], [0, 1, 2, 3 ]));
+		input.addPlugin(new InputterPluginKeyboard([Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN], [Keyboard.Z, Keyboard.X, Keyboard.C, Keyboard.V]));		
 		
 		launcher = new Launcher(Settings.PATH_MAME);
 		
@@ -61,15 +71,12 @@ class Main extends Sprite {
 	
 	function handleParseReady(e:Event) {
 		trace('handleParseReady');
-		gameListView = new GameListView(collection);
+		gameListView = new GameListView(collection, input);
 		addChild(gameListView);
 	}
 	
 	function handleEnterFrame(e:Event) {
-		graphics.clear();
-		if (parser.progress >= 1) return;
-		graphics.beginFill(0x000000);
-		graphics.drawRect(5, 5, 2, 234 * parser.progress);
+		if (gameListView != null) gameListView.update();
 	}
 	
 	function handleKeyDown(e:KeyboardEvent) {

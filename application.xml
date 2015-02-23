@@ -17,6 +17,7 @@
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="grapetools" />
+	<haxelib name="inputter" />
 	
 	<!-- assets -->
 	<icon path="assets/openfl.svg" />
