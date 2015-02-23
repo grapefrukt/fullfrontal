@@ -1,4 +1,4 @@
-package com.grapefrukt.apps.fullfrontal;
+package com.grapefrukt.apps.fullfrontal.utils;
 import com.grapefrukt.apps.fullfrontal.models.Game;
 import haxe.Timer;
 import openfl.display.BitmapData;
@@ -38,9 +38,14 @@ class Snapshots {
 		if (game == null) return;
 		
 		var image = BitmapData.load(path + game.name + '.png');
-		matrix.identity();
-		matrix.scale(game.snap.width / image.width, game.snap.height / image.height);
-		game.snap.draw(image, matrix, null, null, null, true);
+		if (image != null && game.snap != null) {
+			matrix.identity();
+			matrix.scale(game.snap.width / image.width, game.snap.height / image.height);
+			game.snap.draw(image, matrix, null, null, null, true);
+			image.dispose();
+		} else if (image == null && game.snap != null) {
+			game.snap.fillRect(game.snap.rect, 0x000000);
+		}
 	}
 	
 	public function request(game:Game) {
@@ -51,6 +56,10 @@ class Snapshots {
 			timer = new Timer(16);
 			timer.run = tick;
 		}
+	}
+	
+	public function cancelRequest(game:Game) {
+		queue.remove(game);
 	}
 	
 }

@@ -39,11 +39,10 @@ class GameListView extends Sprite {
 		
 		views = [];
 		for (i in 0 ... rows * cols) {
-			var view = new GameView(i, i % cols, Math.floor(i / cols));
+			var view = new GameView(collection, i, i % cols, Math.floor(i / cols));
 			views.push(view);
 			addChild(view);
-		}
-		
+		}	
 	}
 	
 	public function update() {
@@ -55,6 +54,6 @@ class GameListView extends Sprite {
 		for (view in views) view.update(selectionX, Math.floor(scrollY));
 	}
 	
-	function get_maxScrollY() return Std.int(collection.games.length / cols) - 1;
+	function get_maxScrollY() return Std.int(collection.games.length / cols) - 2;
 	
 }

@@ -1,5 +1,8 @@
 package com.grapefrukt.apps.fullfrontal.views;
 
+import com.grapefrukt.apps.fullfrontal.models.Collection;
+import com.grapefrukt.apps.fullfrontal.models.Game;
+import openfl.display.Bitmap;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 
@@ -13,21 +16,28 @@ class GameView extends Sprite {
 	var offsetX(default, null):Int;
 	var offsetY(default, null):Int;
 	
+	var lastGameIndex:Int = -1;
+	
 	var text:TextField;
+	var collection:Collection;
+	var game:Game;
+	
+	var bitmap:Bitmap;
 
-	public function new(index:Int, offsetX:Int, offsetY:Int) {
+	public function new(collection:Collection, index:Int, offsetX:Int, offsetY:Int) {
 		super();
+		this.collection = collection;
 		this.index = index;
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		
-		text = new TextField();
-		text.text = Std.string(index);
-		text.selectable = false;
+		bitmap = new Bitmap(null);
+		addChild(bitmap);
 		
-		alpha = .5;
-		
-		addChild(text);
+		//text = new TextField();
+		//text.text = Std.string(index);
+		//text.selectable = false;
+		//addChild(text);
 		
 		graphics.beginFill(Std.int(Math.random() * 0xffffff));
 		graphics.drawRect(0, 0, Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H);
@@ -38,12 +48,22 @@ class GameView extends Sprite {
 		var page = Math.floor(row / 4);
 		var scrollRow = row - page * 4;
 		var gameIndex = page * 12 + index;
+		if (lastGameIndex != gameIndex) refresh(gameIndex);
 		
-		text.text = '$index\n$page\n$gameIndex';
+		//text.text = '$index\n$page\n$gameIndex';
 		x = offsetX * Settings.VIEW_GAME_W;
 		y = ( -scrollRow + 2) * Settings.VIEW_GAME_H;
+	}
+	
+	function refresh(gameIndex:Int) {
+		lastGameIndex = gameIndex;
+		if (game != null) game.disposeSnap();
+		game = collection.getGameByIndex(gameIndex);
+		visible = game != null;
+		if (!visible) return;
 		
-		// ((offsetY - (selectionY + 2)) % 4 + 2)
+		game.generateSnap();
+		bitmap.bitmapData = game.snap;
 	}
 	
 }

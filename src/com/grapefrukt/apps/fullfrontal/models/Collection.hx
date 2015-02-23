@@ -1,4 +1,5 @@
 package com.grapefrukt.apps.fullfrontal.models;
+import com.grapefrukt.apps.fullfrontal.utils.Snapshots;
 
 /**
  * ...
@@ -12,13 +13,17 @@ class Collection {
 
 	public var numGames(get, never):Int;
 	
+	public var snapshots(default, null):Snapshots;
+	
 	public function new() {
 		games = [];
 		categories = [];
 		categoryMap = new Map();
+		snapshots = new Snapshots();
 	}
 	
 	public function addGame(game:Game) {
+		game.setCollection(this);
 		games.push(game);
 	}
 	
@@ -30,6 +35,12 @@ class Collection {
 		}
 		
 		return category;
+	}
+	
+	public function getGameByIndex(index:Int):Game {
+		if (index < 0) return null;
+		if (index > games.length - 1) return null;
+		return games[index];
 	}
 	
 	function get_numGames() return games.length;

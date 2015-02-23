@@ -34,7 +34,6 @@ class Main extends Sprite {
 	var parser:Parser;
 	var launcher:Launcher;
 	var collection:Collection;
-	var snapshots:Snapshots;
 	var gameListView:GameListView;
 	var input:InputterPlayer;
 	
@@ -62,8 +61,6 @@ class Main extends Sprite {
 		//parser.addEventListener(ParserEvent.COMPLETE, handleParseComplete);
 		//parser.addEventListener(ParserEvent.PROGRESS, handleParseProgress);
 		parser.addEventListener(ParserEvent.READY, handleParseReady);
-		
-		snapshots = new Snapshots();
 		
 		addEventListener(Event.ENTER_FRAME, handleEnterFrame);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
