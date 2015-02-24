@@ -5,6 +5,7 @@ import com.grapefrukt.apps.fullfrontal.utils.Parser;
 import com.grapefrukt.apps.fullfrontal.utils.Fullscreener;
 import com.grapefrukt.apps.fullfrontal.utils.Launcher;
 import com.grapefrukt.apps.fullfrontal.utils.Resizer;
+import com.grapefrukt.apps.fullfrontal.utils.SleepDetector;
 import com.grapefrukt.apps.fullfrontal.views.GameListView;
 import com.grapefrukt.utils.CrashReporter;
 import com.grapefrukt.utils.inputter.events.InputterEvent;
@@ -46,6 +47,7 @@ class Main extends Sprite {
 	public function new() {
 		super();		
 		CrashReporter.init('C:\\files\\dev\\fullfrontal\\src\\');
+		SleepDetector.init();
 		
 		Mouse.hide();
 		

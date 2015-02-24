@@ -2,6 +2,7 @@ package com.grapefrukt.apps.fullfrontal.views;
 
 import bitmapFont.BitmapTextField;
 import com.grapefrukt.apps.fullfrontal.models.Collection;
+import com.grapefrukt.apps.fullfrontal.models.Game;
 import com.grapefrukt.apps.fullfrontal.utils.InputRepeater;
 import com.grapefrukt.apps.fullfrontal.views.GameView;
 import com.grapefrukt.utils.inputter.events.InputterEvent;
@@ -30,13 +31,14 @@ class GameListView extends Sprite {
 	var inputRepeatX:InputRepeater;
 	
 	var maxScrollY(get, never):Int;
-	public var selectedIndex(get, never):Int;
 	var lastSelectedIndex = -1;
 	
 	var text:BitmapTextField;
-	
 	var fadeTop:Shape;
 	var fadeBottom:Shape;
+	var currentLetter:CurrentLetterView;
+	
+	public var selectedIndex(get, never):Int;
 
 	public function new(collection:Collection, input:InputterPlayer) {
 		super();
@@ -45,8 +47,8 @@ class GameListView extends Sprite {
 		inputRepeatX = new InputRepeater(input, 0);
 		inputRepeatY = new InputRepeater(input, 1);
 		
-		x = Settings.VIEW_MARGIN_LEFT;
-		y = Settings.VIEW_MARGIN_TOP + Settings.VIEW_GAME_H / 2;
+		x = Settings.VIEW_MARGIN_X;
+		y = Settings.VIEW_MARGIN_Y + Settings.VIEW_GAME_H / 2;
 		
 		views = [];
 		for (i in 0 ... rows * cols) {
@@ -65,7 +67,11 @@ class GameListView extends Sprite {
 		fadeBottom.graphics.drawRect(0, Settings.STAGE_H - 50 - y, Settings.STAGE_W, 50);
 		addChild(fadeBottom);
 		
-		text = FontSettings.getDefaultTextField(Settings.STAGE_W);
+		currentLetter = new CurrentLetterView();
+		addChild(currentLetter);
+		
+		text = FontSettings.getDefaultTextField(Settings.STAGE_W - Settings.VIEW_MARGIN_X * 2);
+		text.y = Settings.STAGE_H - 42 - y;
 		addChild(text);
 	}
 	
@@ -100,8 +106,9 @@ class GameListView extends Sprite {
 		var selectedGame = collection.getGameByIndex(selectedIndex);
 		if (selectedGame == null) return;
 		text.text = selectedGame.description;
-		text.x = -x;
-		text.y = Settings.STAGE_H - 42 - y;
+		trace(text.text);
+		
+		currentLetter.setSelectedGame(selectedGame);
 	}
 	
 	function get_maxScrollY() return Std.int(collection.games.length / cols) - 2;

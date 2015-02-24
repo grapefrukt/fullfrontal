@@ -31,7 +31,7 @@ class Snapshots {
 			timer = null;
 		}
 		
-		trace('$numLoaded snaps loaded');
+		//trace('$numLoaded snaps loaded');
 	}
 	
 	function pop() {

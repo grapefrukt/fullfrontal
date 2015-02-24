@@ -8,7 +8,7 @@ class Settings {
 
 	public static var STAGE_W:Int = 320;
 	public static var STAGE_H:Int = 240;
-	public static var FULLSCREEN:Bool = false;
+	public static var FULLSCREEN:Bool = true;
 	
 	public static var PATH_MAME	:String = 'c:/files/games/emu/mame/mame64.exe';
 	public static var PATH_XML	:String = 'mame_filtered.xml';
@@ -17,8 +17,8 @@ class Settings {
 	public static var VIEW_GAME_NUM_COLUMNS		:Int = 3;
 	public static var VIEW_GAME_NUM_ROWS		:Int = 4;
 	
-	public static inline var VIEW_MARGIN_LEFT	:Int = 18;
-	public static inline var VIEW_MARGIN_TOP	:Int = 10;
+	public static inline var VIEW_MARGIN_X	:Int = 18;
+	public static inline var VIEW_MARGIN_Y	:Int = 10;
 	
 	public static inline var VIEW_GAME_SNAP_W	:Int = 89;
 	public static inline var VIEW_GAME_SNAP_H	:Int = 67;
