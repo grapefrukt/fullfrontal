@@ -32,7 +32,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--remap flash:openfl&#xA;#--macro keep(&quot;com.grapefrukt.apps.fullfrontal.Main&quot;)&#xA;-debug " />
+    <option additional="--remap flash:openfl&#xA;#--macro keep(&quot;com.grapefrukt.apps.fullfrontal.Main&quot;)" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

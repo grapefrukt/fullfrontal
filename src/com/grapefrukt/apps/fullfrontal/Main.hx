@@ -1,7 +1,8 @@
 package com.grapefrukt.apps.fullfrontal;
 
 import com.grapefrukt.apps.fullfrontal.models.Collection;
-import com.grapefrukt.apps.fullfrontal.utils.Parser;
+import com.grapefrukt.apps.fullfrontal.parser.FavoritesParser;
+import com.grapefrukt.apps.fullfrontal.parser.XMLParser;
 import com.grapefrukt.apps.fullfrontal.utils.Fullscreener;
 import com.grapefrukt.apps.fullfrontal.utils.Launcher;
 import com.grapefrukt.apps.fullfrontal.utils.Resizer;
@@ -35,12 +36,13 @@ import openfl.events.KeyboardEvent;
 class Main extends Sprite {
 
 	var hasGameRunning = false;
-	var parser:Parser;
 	var launcher:Launcher;
 	var collection:Collection;
 	var gameListView:GameListView;
 	var input:InputterPlayer;
 	var settings:SettingsLoader;
+	var parserXML:XMLParser;
+	var parserFavorites:FavoritesParser;
 	
 	public static var home(default, null):String = '';
 	
@@ -75,22 +77,28 @@ class Main extends Sprite {
 		
 		collection = new Collection();
 		
-		parser = new Parser(collection, 12);
-		parser.addEventListener(ParserEvent.COMPLETE, handleParseComplete);
-		//parser.addEventListener(ParserEvent.PROGRESS, handleParseProgress);
-		parser.addEventListener(ParserEvent.READY, handleParseReady);
+		parserXML = new XMLParser(collection, 12);
+		parserXML.addEventListener(ParserEvent.COMPLETE, handleParseComplete);
+		//parserXML.addEventListener(ParserEvent.PROGRESS, handleParseProgress);
+		parserXML.addEventListener(ParserEvent.READY, handleParseReady);
+		
+		parserFavorites = new FavoritesParser(collection);
 		
 		addEventListener(Event.ENTER_FRAME, handleEnterFrame);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
 	}
 	
 	function handleButtonDown(e:InputterEvent) {
-		var game = collection.getGameByIndex(gameListView.selectedIndex);
-		launcher.requestLaunch(game);
+		
+		switch(e.index) {
+			case 0 : launcher.requestLaunch(collection.getGameByIndex(gameListView.selectedIndex));
+			case 1 : collection.cycleList();
+		}
 	}
 	
 	function handleParseComplete(e:ParserEvent) {
 		for (game in collection.games) game.generateSnap(false);
+		parserFavorites.handleParseComplete();
 	}
 	
 	function handleParseReady(e:Event) {

@@ -1,5 +1,6 @@
 package com.grapefrukt.apps.fullfrontal.views;
 
+import bitmapFont.BitmapTextAlign;
 import bitmapFont.BitmapTextField;
 import com.grapefrukt.apps.fullfrontal.models.Collection;
 import com.grapefrukt.apps.fullfrontal.models.Game;
@@ -33,16 +34,21 @@ class GameListView extends Sprite {
 	var maxScrollY(get, never):Int;
 	var lastSelectedIndex = -1;
 	
-	var text:BitmapTextField;
+	var textTitle:BitmapTextField;
+	var textList:BitmapTextField;
 	var fadeTop:Shape;
 	var fadeBottom:Shape;
 	var currentLetter:CurrentLetterView;
+	
+	var forceRefresh:Bool = false;
 	
 	public var selectedIndex(get, never):Int;
 
 	public function new(collection:Collection, input:InputterPlayer) {
 		super();
 		this.collection = collection;
+		
+		collection.addEventListener(CollectionEvent.CHANGE_LIST, handleChangeList);
 		
 		inputRepeatX = new InputRepeater(input, 0);
 		inputRepeatY = new InputRepeater(input, 1);
@@ -70,9 +76,20 @@ class GameListView extends Sprite {
 		currentLetter = new CurrentLetterView();
 		addChild(currentLetter);
 		
-		text = FontSettings.getDefaultTextField(Settings.STAGE_W - Settings.VIEW_MARGIN_X * 2);
-		text.y = Settings.STAGE_H - 42 - y;
-		addChild(text);
+		textTitle = FontSettings.getDefaultTextField(Settings.STAGE_W - Settings.VIEW_MARGIN_X * 2);
+		textTitle.y = Settings.STAGE_H - 42 - y;
+		addChild(textTitle);
+		
+		textList = FontSettings.getDefaultTextField(Settings.STAGE_W - Settings.VIEW_MARGIN_X * 2);
+		textList.y = -20;
+		textList.alignment = BitmapTextAlign.RIGHT;
+		addChild(textList);
+	}
+	
+	function handleChangeList(e:CollectionEvent) {
+		forceRefresh = true;
+		lastSelectedIndex = -1;
+		textList.text = collection.currentList.name;
 	}
 	
 	public function update() {
@@ -98,20 +115,24 @@ class GameListView extends Sprite {
 		if (scrollY < 0) scrollY = 0;
 		if (scrollY > maxScrollY) scrollY = maxScrollY;
 		
-		for (view in views) view.update(selectionX, selectionY, Math.floor(scrollY), selectedIndex);
+		for (view in views) view.update(selectionX, selectionY, Math.floor(scrollY), selectedIndex, forceRefresh);
+		forceRefresh = false;
 		
 		if (lastSelectedIndex == selectedIndex) return;
 		lastSelectedIndex = selectedIndex;
 		
 		var selectedGame = collection.getGameByIndex(selectedIndex);
 		if (selectedGame == null) return;
-		text.text = selectedGame.description;
-		trace(text.text);
-		
+		textTitle.text = selectedGame.description;
 		currentLetter.setSelectedGame(selectedGame);
 	}
 	
-	function get_maxScrollY() return Std.int(collection.games.length / cols) - 2;
-	function get_selectedIndex() return Math.floor((scrollY + selectionY) * cols + selectionX);
+	function get_maxScrollY() return Math.ceil(collection.games.length / cols) - 2;
+	function get_selectedIndex() {
+		var index = Math.floor((scrollY + selectionY) * cols + selectionX);
+		if (index < 0) return 0;
+		if (index >= collection.numGames) return collection.games.length -1;
+		return index;
+	}
 	
 }

@@ -57,7 +57,7 @@ class InputRepeater {
 		if (repeatRatio < 0) return;
 		if (repeatRatio > 1) repeatRatio = 1;
 		
-		queuedMoves += value * (repeatSpeedStart + Quad.easeIn(repeatRatio) * (repeatSpeedEnd - repeatSpeedStart));
+		queuedMoves += value * (repeatSpeedStart + (repeatRatio) * (repeatSpeedEnd - repeatSpeedStart));
 		
 		//trace(timeHeld, Math.round(queuedMoves * 100) / 100);
 	}

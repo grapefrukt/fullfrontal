@@ -37,21 +37,13 @@ class GameView extends Sprite {
 		bitmap = new Bitmap(null);
 		addChild(bitmap);
 		
-		//text = new TextField();
-		//text.text = Std.string(index);
-		//text.selectable = false;
-		//addChild(text);
-		
 		selection = new Shape();
 		selection.graphics.lineStyle(3, Settings.COLOR_BASE, 1, false, null, null, JointStyle.MITER);
 		selection.graphics.drawRect(0, 0, Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H);
 		addChild(selection);
-		
-		//graphics.beginFill(Std.int(Math.random() * 0xffffff));
-		//graphics.drawRect(0, 0, Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H);
 	}
 	
-	public function update(selectionX:Int, selectionY:Int, scrollY:Int, selectedIndex:Int) {
+	public function update(selectionX:Int, selectionY:Int, scrollY:Int, selectedIndex:Int, forceRefresh:Bool = false) {
 		var row = scrollY - offsetY + 2;
 		var page = Math.floor(row / 4);
 		var scrollRow = row - page * 4;
@@ -59,7 +51,7 @@ class GameView extends Sprite {
 		
 		selection.visible = selectedIndex == gameIndex;
 		
-		if (lastGameIndex != gameIndex) refresh(gameIndex);
+		if (lastGameIndex != gameIndex || forceRefresh) refresh(gameIndex);
 		
 		x = offsetX * Settings.VIEW_GAME_W;
 		y = ( -scrollRow + 2) * Settings.VIEW_GAME_H;

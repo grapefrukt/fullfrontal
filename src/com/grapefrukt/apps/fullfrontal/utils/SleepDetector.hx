@@ -33,8 +33,6 @@ class SleepDetector {
 		
 		average /= NUM_TIMES - 1;
 		
-		trace(average);
-		
 		if (average > TIME * 2) {
 			trace('was in sleep mode, exiting fullscreen to rejigger display');
 			Fullscreener.exitFullscreen();

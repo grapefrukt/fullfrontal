@@ -1,4 +1,4 @@
-package com.grapefrukt.apps.fullfrontal.utils;
+package com.grapefrukt.apps.fullfrontal.parser;
 import com.grapefrukt.apps.fullfrontal.models.Collection;
 import com.grapefrukt.apps.fullfrontal.models.Game;
 import haxe.io.Eof;
@@ -15,7 +15,7 @@ import sys.io.FileInput;
  * @author Martin Jonasson, m@grapefrukt.com
  */
  
-class Parser extends EventDispatcher {
+class XMLParser extends EventDispatcher {
 
 	var startTime:Int = 0;
 	

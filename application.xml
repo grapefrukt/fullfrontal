@@ -22,7 +22,6 @@
 	
 	<!-- assets -->
 	<icon path="assets/openfl.svg" />
-	<assets path="assets/fonts"  rename="fonts"	 include="*.ttf" />
 	<assets path="assets/images" rename="images" include="*.png" />
 	<assets path="assets/config" rename="config" include="*.cfg" />
 	

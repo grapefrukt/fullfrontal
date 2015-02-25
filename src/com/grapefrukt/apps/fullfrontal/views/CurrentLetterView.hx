@@ -26,7 +26,7 @@ class CurrentLetterView extends Sprite {
 		var newChar = getChar(game);
 		if (newChar == currentChar) return;
 		currentChar = newChar;
-		trace('currentChar: $currentChar');
+		//trace('currentChar: $currentChar');
 		text.text = currentChar;
 	}
 	

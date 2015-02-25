@@ -31,7 +31,7 @@ class Settings {
 	static public inline var INPUT_TIME_TO_REPEAT:Int = 200;
 	static public inline var INPUT_TIME_TO_MAX:Int = 4000;
 	static public inline var INPUT_REPEAT_SPEED_MIN:Float = .06;
-	static public inline var INPUT_REPEAT_SPEED_MAX:Float = 5;
+	static public inline var INPUT_REPEAT_SPEED_MAX:Float = 3;
 	
 	static public inline var COLOR_BASE:Int = 0xc9db00;
 	static public inline var COLOR_SNAP:Int = 0x3f3f3f;
