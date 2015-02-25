@@ -44,4 +44,8 @@ class Game {
 		this.collection = collection;
 	}
 	
+	public function toString() {
+		return '[Game $name]';
+	}
+	
 }

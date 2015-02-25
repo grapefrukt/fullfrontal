@@ -17,6 +17,7 @@ class CurrentLetterView extends Sprite {
 	public function new() {
 		super();
 		y -= 20;
+		x -= 1;
 		text = FontSettings.getDefaultTextField(Settings.STAGE_W - Settings.VIEW_MARGIN_X * 2);
 		text.alignment = BitmapTextAlign.LEFT;
 		addChild(text);

@@ -8,6 +8,7 @@ import com.grapefrukt.apps.fullfrontal.utils.InputRepeater;
 import com.grapefrukt.apps.fullfrontal.views.GameView;
 import com.grapefrukt.utils.inputter.events.InputterEvent;
 import com.grapefrukt.utils.inputter.InputterPlayer;
+import motion.Actuate;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.text.TextField;
@@ -40,7 +41,8 @@ class GameListView extends Sprite {
 	var fadeBottom:Shape;
 	var currentLetter:CurrentLetterView;
 	
-	var forceRefresh:Bool = false;
+	var lockUpdates:Bool = false;
+	var selectedGame:com.grapefrukt.apps.fullfrontal.models.Game;
 	
 	public var selectedIndex(get, never):Int;
 
@@ -64,12 +66,12 @@ class GameListView extends Sprite {
 		}
 		
 		fadeTop = new Shape();
-		fadeTop.graphics.beginFill(0, .5);
+		fadeTop.graphics.beginFill(0, .8);
 		fadeTop.graphics.drawRect(0, -y, Settings.STAGE_W, 40);
 		addChild(fadeTop);
 		
 		fadeBottom = new Shape();
-		fadeBottom.graphics.beginFill(0, .5);
+		fadeBottom.graphics.beginFill(0, .8);
 		fadeBottom.graphics.drawRect(0, Settings.STAGE_H - 50 - y, Settings.STAGE_W, 50);
 		addChild(fadeBottom);
 		
@@ -84,15 +86,34 @@ class GameListView extends Sprite {
 		textList.y = -20;
 		textList.alignment = BitmapTextAlign.RIGHT;
 		addChild(textList);
+		
+		alpha = 0;
+		handleChangeList(null);
 	}
 	
 	function handleChangeList(e:CollectionEvent) {
-		forceRefresh = true;
-		lastSelectedIndex = -1;
-		textList.text = collection.currentList.name;
+		lockUpdates = true;
+		Actuate.tween(this, .2, { alpha : 0 } ).onComplete(function() {
+			textList.text = collection.currentList.name;
+		
+			// tries to stay on the same game when list switches
+			var index = collection.games.indexOf(selectedGame);
+			if (index == -1) index = 0;
+			lastSelectedIndex = index;
+			selectionX = index % cols;
+			selectionY = 0;
+			scrollY = Math.floor(index / cols);
+			
+			lockUpdates = false;
+			update(true);
+			
+			Actuate.tween(this, .2, { alpha : 1 } );
+		});
 	}
 	
-	public function update() {
+	public function update(force:Bool = false) {
+		if (lockUpdates && !force) return;
+		
 		inputRepeatY.update();
 		inputRepeatX.update();
 		
@@ -115,13 +136,12 @@ class GameListView extends Sprite {
 		if (scrollY < 0) scrollY = 0;
 		if (scrollY > maxScrollY) scrollY = maxScrollY;
 		
-		for (view in views) view.update(selectionX, selectionY, Math.floor(scrollY), selectedIndex, forceRefresh);
-		forceRefresh = false;
+		for (view in views) view.update(selectionX, selectionY, Math.floor(scrollY), selectedIndex, force);
 		
 		if (lastSelectedIndex == selectedIndex) return;
 		lastSelectedIndex = selectedIndex;
 		
-		var selectedGame = collection.getGameByIndex(selectedIndex);
+		selectedGame = collection.getGameByIndex(selectedIndex);
 		if (selectedGame == null) return;
 		textTitle.text = selectedGame.description;
 		currentLetter.setSelectedGame(selectedGame);
