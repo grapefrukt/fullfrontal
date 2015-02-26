@@ -76,19 +76,19 @@ if [ ''$upload'' = true ] ; then
 
 	echo -e "\033[36mUploading to Dropbox...\033[0m"
 	# generates a text file with all listed sound effects
-	rm -f ${bin}sounds/sound_list.txt
-	echo '!!! this file is generated and will be overwritten automatically !!!' >> ${bin}sounds/sound_list.txt
-	echo ' ' >> ${bin}sounds/sound_list.txt
-	sed -n '/enum Sfx {/,/}/{
-	/{/d
-	/}/d
-	p
-	}' < ../src/com/grapefrukt/games/spacematch/sound/SoundManager.hx | sed -e "s/\s//g" | sed -e "s/;//g" >> ${bin}sounds/sound_list.txt
+	#rm -f ${bin}sounds/sound_list.txt
+	#echo '!!! this file is generated and will be overwritten automatically !!!' >> ${bin}sounds/sound_list.txt
+	#echo ' ' >> ${bin}sounds/sound_list.txt
+	#sed -n '/enum Sfx {/,/}/{
+	#/{/d
+	#/}/d
+	#p
+	#}' < ../src/com/grapefrukt/games/spacematch/sound/SoundManager.hx | sed -e "s/\s//g" | sed -e "s/;//g" >> ${bin}sounds/sound_list.txt
 
 	syncDir "up" 	"." 		"*"					"true"
 	syncDir "up" 	"images"	"*"
 	#syncDir "up" 	"config" 	"values.cfg"
-	#syncDir "up" 	"sounds" 	"sound_list.txt"
+	syncDir "up" 	"sounds" 	"*.wav"
 
 fi
 

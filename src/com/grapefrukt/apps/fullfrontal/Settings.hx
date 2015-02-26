@@ -35,4 +35,9 @@ class Settings {
 	
 	static public inline var COLOR_BASE:Int = 0xc9db00;
 	static public inline var COLOR_SNAP:Int = 0x3f3f3f;
+	
+	public static inline var SOUND_MUSIC_FADEIN_DURATION	:Float = 1.0;
+	public static inline var SOUND_MUSIC_FADEOUT_DURATION	:Float = 1.0;
+	public static inline var SOUND_PLAY_MUSIC				:Bool = false;
+	public static inline var SOUND_MIN_REPEAT_DELAY			:Float = 50;
 }

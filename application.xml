@@ -21,9 +21,10 @@
 	<haxelib name="inputter" />
 	
 	<!-- assets -->
-	<icon path="assets/openfl.svg" />
+	<icon path="assets/icon.png" />
 	<assets path="assets/images" rename="images" include="*.png" />
 	<assets path="assets/config" rename="config" include="*.cfg" />
+	<assets path="assets/sounds" rename="sounds" include="*.wav" />
 	
 	<haxedef name="RENDER_TILE" />
 	

@@ -1,5 +1,6 @@
 package com.grapefrukt.apps.fullfrontal.utils;
 import com.grapefrukt.apps.fullfrontal.models.Game;
+import com.grapefrukt.apps.fullfrontal.sound.SoundManager;
 import haxe.Timer;
 import openfl.display.BitmapData;
 import openfl.geom.Matrix;
@@ -16,6 +17,7 @@ class Snapshots {
 	var matrix:Matrix;
 	
 	var numLoaded:Int = 0;
+	var alertOnComplete:Bool = false;
 	
 	public function new() {
 		queue = new List();
@@ -29,6 +31,9 @@ class Snapshots {
 		if (queue.length == 0) {
 			timer.stop();
 			timer = null;
+			
+			if (alertOnComplete) SoundManager.play(Sfx.complete);
+			alertOnComplete = false;
 		}
 		
 		//trace('$numLoaded snaps loaded');
@@ -60,6 +65,11 @@ class Snapshots {
 			timer = new Timer(16);
 			timer.run = tick;
 		}
+	}
+	
+	public function requestAll(games:Array<Game>) {
+		alertOnComplete = true;
+		for (game in games) game.generateSnap(false);
 	}
 	
 	public function cancelRequest(game:Game) {

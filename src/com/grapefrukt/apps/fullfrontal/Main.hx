@@ -3,6 +3,7 @@ package com.grapefrukt.apps.fullfrontal;
 import com.grapefrukt.apps.fullfrontal.models.Collection;
 import com.grapefrukt.apps.fullfrontal.parser.FavoritesParser;
 import com.grapefrukt.apps.fullfrontal.parser.XMLParser;
+import com.grapefrukt.apps.fullfrontal.sound.SoundManager;
 import com.grapefrukt.apps.fullfrontal.utils.Fullscreener;
 import com.grapefrukt.apps.fullfrontal.utils.Launcher;
 import com.grapefrukt.apps.fullfrontal.utils.Resizer;
@@ -61,6 +62,8 @@ class Main extends Sprite {
 	function init() {
 		trace('init');
 		
+		SoundManager.init();
+		
 		var inputter = new Inputter(stage);
 		input = inputter.createPlayer(4, 10);
 		input.addPlugin(new InputterPluginJoystick(0, [0, 1, 2, 3], [0, 1, 2, 3 ]));
@@ -89,15 +92,15 @@ class Main extends Sprite {
 	}
 	
 	function handleButtonDown(e:InputterEvent) {
-		
 		switch(e.index) {
-			case 0 : launcher.requestLaunch(collection.getGameByIndex(gameListView.selectedIndex));
-			case 1 : collection.cycleList();
+			case 0 : 	SoundManager.play(Sfx.start);
+						launcher.requestLaunch(collection.getGameByIndex(gameListView.selectedIndex));
+			case 1 : 	collection.cycleList();
 		}
 	}
 	
 	function handleParseComplete(e:ParserEvent) {
-		for (game in collection.games) game.generateSnap(false);
+		collection.snapshots.requestAll(collection.all.games);
 		parserFavorites.handleParseComplete();
 	}
 	

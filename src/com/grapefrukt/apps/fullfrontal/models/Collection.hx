@@ -38,6 +38,8 @@ class Collection extends EventDispatcher {
 	}
 	
 	public function cycleList() {
+		if (lists.length == 1) return;
+		
 		listIndex++;
 		if (listIndex >= lists.length) listIndex = 0;
 		trace('cycle list $listIndex');

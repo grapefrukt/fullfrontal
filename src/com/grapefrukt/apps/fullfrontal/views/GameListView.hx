@@ -4,6 +4,7 @@ import bitmapFont.BitmapTextAlign;
 import bitmapFont.BitmapTextField;
 import com.grapefrukt.apps.fullfrontal.models.Collection;
 import com.grapefrukt.apps.fullfrontal.models.Game;
+import com.grapefrukt.apps.fullfrontal.sound.SoundManager;
 import com.grapefrukt.apps.fullfrontal.utils.InputRepeater;
 import com.grapefrukt.apps.fullfrontal.views.GameView;
 import com.grapefrukt.utils.inputter.events.InputterEvent;
@@ -107,6 +108,8 @@ class GameListView extends Sprite {
 			lockUpdates = false;
 			update(true);
 			
+			SoundManager.play(Sfx.list);
+			
 			Actuate.tween(this, .2, { alpha : 1 } );
 		});
 	}
@@ -140,6 +143,8 @@ class GameListView extends Sprite {
 		
 		if (lastSelectedIndex == selectedIndex) return;
 		lastSelectedIndex = selectedIndex;
+		
+		SoundManager.play(Sfx.move);
 		
 		selectedGame = collection.getGameByIndex(selectedIndex);
 		if (selectedGame == null) return;
