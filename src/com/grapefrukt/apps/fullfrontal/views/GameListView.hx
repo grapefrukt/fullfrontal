@@ -10,6 +10,7 @@ import com.grapefrukt.apps.fullfrontal.views.GameView;
 import com.grapefrukt.utils.inputter.events.InputterEvent;
 import com.grapefrukt.utils.inputter.InputterPlayer;
 import motion.Actuate;
+import motion.easing.Back;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.text.TextField;
@@ -22,8 +23,10 @@ class GameListView extends Sprite {
 	
 	var collection:Collection;
 	var views:Array<GameView>;
+	var container:Sprite;
 	var rows:Int = Settings.VIEW_GAME_NUM_ROWS;
 	var cols:Int = Settings.VIEW_GAME_NUM_COLUMNS;
+	var containerHomeY:Float = Settings.VIEW_MARGIN_Y + Settings.VIEW_GAME_H / 2;
 	
 	var scrollY:Float = 0;
 	
@@ -43,7 +46,7 @@ class GameListView extends Sprite {
 	var currentLetter:CurrentLetterView;
 	
 	var lockUpdates:Bool = false;
-	var selectedGame:com.grapefrukt.apps.fullfrontal.models.Game;
+	var selectedGame:Game;
 	
 	public var selectedIndex(get, never):Int;
 
@@ -56,35 +59,39 @@ class GameListView extends Sprite {
 		inputRepeatX = new InputRepeater(input, 0);
 		inputRepeatY = new InputRepeater(input, 1);
 		
-		x = Settings.VIEW_MARGIN_X;
-		y = Settings.VIEW_MARGIN_Y + Settings.VIEW_GAME_H / 2;
+		container = new Sprite();
+		container.x = Settings.VIEW_MARGIN_X;
+		container.y = containerHomeY;
+		addChild(container);
 		
 		views = [];
 		for (i in 0 ... rows * cols) {
 			var view = new GameView(collection, i, i % cols, Math.floor(i / cols));
 			views.push(view);
-			addChild(view);
+			container.addChild(view);
 		}
 		
 		fadeTop = new Shape();
 		fadeTop.graphics.beginFill(0, .8);
-		fadeTop.graphics.drawRect(0, -y, Settings.STAGE_W, 40);
+		fadeTop.graphics.drawRect(0, 0, Settings.STAGE_W, 40);
 		addChild(fadeTop);
 		
 		fadeBottom = new Shape();
 		fadeBottom.graphics.beginFill(0, .8);
-		fadeBottom.graphics.drawRect(0, Settings.STAGE_H - 50 - y, Settings.STAGE_W, 50);
+		fadeBottom.graphics.drawRect(0, Settings.STAGE_H - 45, Settings.STAGE_W, 50);
 		addChild(fadeBottom);
 		
 		currentLetter = new CurrentLetterView();
 		addChild(currentLetter);
 		
 		textTitle = FontSettings.getDefaultTextField(Settings.STAGE_W - Settings.VIEW_MARGIN_X * 2);
-		textTitle.y = Settings.STAGE_H - 42 - y;
+		textTitle.x = Settings.VIEW_MARGIN_X;
+		textTitle.y = Settings.STAGE_H - 42;
 		addChild(textTitle);
 		
 		textList = FontSettings.getDefaultTextField(Settings.STAGE_W - Settings.VIEW_MARGIN_X * 2);
-		textList.y = -20;
+		textList.x = Settings.VIEW_MARGIN_X;
+		textList.y = Settings.VIEW_MARGIN_Y;
 		textList.alignment = BitmapTextAlign.RIGHT;
 		addChild(textList);
 		
@@ -126,6 +133,7 @@ class GameListView extends Sprite {
 		
 		selectionY += inputRepeatY.getMovement();
 		
+		var lastScrollY = scrollY;
 		while (selectionY > 1) {
 			scrollY++;
 			selectionY--;
@@ -138,6 +146,12 @@ class GameListView extends Sprite {
 		
 		if (scrollY < 0) scrollY = 0;
 		if (scrollY > maxScrollY) scrollY = maxScrollY;
+		
+		if (lastScrollY != scrollY) {
+			var scrollDirection = lastScrollY < scrollY ? 1 : -1;
+			container.y = containerHomeY + Settings.VIEW_GAME_SNAP_H * scrollDirection;
+			Actuate.tween(container, .2, { y : containerHomeY } ).ease(Back.easeOut);
+		}
 		
 		for (view in views) view.update(selectionX, selectionY, Math.floor(scrollY), selectedIndex, force);
 		

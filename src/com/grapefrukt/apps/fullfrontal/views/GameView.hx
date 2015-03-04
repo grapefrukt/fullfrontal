@@ -2,8 +2,9 @@ package com.grapefrukt.apps.fullfrontal.views;
 
 import com.grapefrukt.apps.fullfrontal.models.Collection;
 import com.grapefrukt.apps.fullfrontal.models.Game;
+import motion.Actuate;
+import motion.easing.Back;
 import openfl.display.Bitmap;
-import openfl.display.JointStyle;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.text.TextField;
@@ -26,6 +27,10 @@ class GameView extends Sprite {
 	
 	var bitmap:Bitmap;
 	var selection:Shape;
+	
+	var isSelected:Bool = false;
+	
+	static inline var HIDE_SCALE:Float = .4;
 
 	public function new(collection:Collection, index:Int, offsetX:Int, offsetY:Int) {
 		super();
@@ -34,13 +39,21 @@ class GameView extends Sprite {
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
 		
-		bitmap = new Bitmap(null);
-		addChild(bitmap);
+		graphics.beginFill(0xff00ff);
+		graphics.drawCircle(0, 0, 5);
 		
 		selection = new Shape();
-		selection.graphics.lineStyle(3, Settings.COLOR_BASE, 1, false, null, null, JointStyle.MITER);
-		selection.graphics.drawRect(0, 0, Settings.VIEW_GAME_SNAP_W, Settings.VIEW_GAME_SNAP_H);
+		var w = Settings.VIEW_GAME_SNAP_W + Settings.VIEW_GAME_SELECT_OUTLINE * 2;
+		var h = Settings.VIEW_GAME_SNAP_H + Settings.VIEW_GAME_SELECT_OUTLINE * 2;
+		selection.graphics.beginFill(Settings.COLOR_BASE);
+		selection.graphics.drawRect( -w / 2, -h / 2, w, h);
+		selection.scaleX = selection.scaleY = HIDE_SCALE;
 		addChild(selection);
+		
+		bitmap = new Bitmap(null);
+		bitmap.x -= Settings.VIEW_GAME_SNAP_W / 2;
+		bitmap.y -= Settings.VIEW_GAME_SNAP_H / 2;
+		addChild(bitmap);
 	}
 	
 	public function update(selectionX:Int, selectionY:Int, scrollY:Int, selectedIndex:Int, forceRefresh:Bool = false) {
@@ -49,12 +62,23 @@ class GameView extends Sprite {
 		var scrollRow = row - page * 4;
 		var gameIndex = page * 12 + index;
 		
-		selection.visible = selectedIndex == gameIndex;
+		setSelected(selectedIndex == gameIndex);
 		
 		if (lastGameIndex != gameIndex || forceRefresh) refresh(gameIndex);
 		
-		x = offsetX * Settings.VIEW_GAME_W;
-		y = ( -scrollRow + 2) * Settings.VIEW_GAME_H;
+		x = offsetX * Settings.VIEW_GAME_W + Settings.VIEW_GAME_SNAP_W / 2;
+		y = ( -scrollRow + 2) * Settings.VIEW_GAME_H + Settings.VIEW_GAME_SNAP_H / 2;
+	}
+	
+	function setSelected(value:Bool) {
+		if (isSelected == value) return;
+		isSelected = value;
+		if (isSelected) {
+			Actuate.tween(selection, .2, { scaleX : 1 } ).ease(Back.easeOut);
+			Actuate.tween(selection, .2, { scaleY : 1 } ).ease(Back.easeOut).delay(.1);
+		} else {
+			Actuate.tween(selection, .2, { scaleX : HIDE_SCALE, scaleY : HIDE_SCALE } );
+		}
 	}
 	
 	function refresh(gameIndex:Int) {

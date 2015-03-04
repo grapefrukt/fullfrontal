@@ -23,6 +23,7 @@ class Settings {
 	public static inline var VIEW_GAME_SNAP_W	:Int = 89;
 	public static inline var VIEW_GAME_SNAP_H	:Int = 67;
 	public static inline var VIEW_GAME_MARGIN	:Int = 8;
+	public static inline var VIEW_GAME_SELECT_OUTLINE	:Int = 3;
 	
 	public static var VIEW_GAME_W:Int = VIEW_GAME_SNAP_W + VIEW_GAME_MARGIN;
 	public static var VIEW_GAME_H:Int = VIEW_GAME_SNAP_H + VIEW_GAME_MARGIN;
