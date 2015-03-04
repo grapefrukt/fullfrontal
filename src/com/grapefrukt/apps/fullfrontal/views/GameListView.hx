@@ -86,7 +86,7 @@ class GameListView extends Sprite {
 		
 		textTitle = FontSettings.getDefaultTextField(Settings.STAGE_W - Settings.VIEW_MARGIN_X * 2);
 		textTitle.x = Settings.VIEW_MARGIN_X;
-		textTitle.y = Settings.STAGE_H - 42;
+		textTitle.y = Settings.STAGE_H - 40;
 		addChild(textTitle);
 		
 		textList = FontSettings.getDefaultTextField(Settings.STAGE_W - Settings.VIEW_MARGIN_X * 2);
@@ -114,6 +114,7 @@ class GameListView extends Sprite {
 			
 			lockUpdates = false;
 			update(true);
+			refreshSelected();
 			
 			SoundManager.play(Sfx.list);
 			
@@ -160,6 +161,10 @@ class GameListView extends Sprite {
 		
 		SoundManager.play(Sfx.move);
 		
+		refreshSelected();
+	}
+	
+	function refreshSelected() {
 		selectedGame = collection.getGameByIndex(selectedIndex);
 		if (selectedGame == null) return;
 		textTitle.text = selectedGame.description;
