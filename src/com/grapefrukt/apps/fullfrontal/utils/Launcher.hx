@@ -62,12 +62,17 @@ class Launcher extends EventDispatcher {
 		var game:String = Thread.readMessage(true);
 		var onComplete:Void->Void = Thread.readMessage(true);
 		
+		if (!sys.FileSystem.exists(path)) {
+			trace('ERROR: $path does not exist');
+			onComplete();
+			return;
+		}
+		
 		Sys.setCwd(path);
 		var p = new Process(executable, [game]);
+		
 		// this call blocks until the process closes
 		var exitCode = p.exitCode();
-		
-		trace('game closed, exit code: $exitCode');
 		
 		onComplete();
 	}
