@@ -9,6 +9,7 @@ import com.grapefrukt.apps.fullfrontal.utils.Launcher;
 import com.grapefrukt.apps.fullfrontal.utils.Resizer;
 import com.grapefrukt.apps.fullfrontal.utils.SleepDetector;
 import com.grapefrukt.apps.fullfrontal.views.GameListView;
+import com.grapefrukt.utils.BuildData;
 import com.grapefrukt.utils.CrashReporter;
 import com.grapefrukt.utils.inputter.events.InputterEvent;
 import com.grapefrukt.utils.inputter.Inputter;
@@ -48,7 +49,8 @@ class Main extends Sprite {
 	public static var home(default, null):String = '';
 	
 	public function new() {
-		super();		
+		super();
+		BuildData.export();
 		CrashReporter.init('C:\\files\\dev\\fullfrontal\\src\\');
 		SleepDetector.init();
 		
