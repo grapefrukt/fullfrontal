@@ -46,17 +46,13 @@ class Fullscreener {
 	static public function enterFullscreen() {
 		timer.reset();
 		timer.start();
-		stage.setFullscreen(true);
-		if (stage.stageWidth != Settings.STAGE_W) {
-			stage.setResolution(Settings.STAGE_W, Settings.STAGE_H);
-		}
+		stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 	}
 	
 	static public function exitFullscreen() {
 		timer.reset();
 		timer.start();
-		stage.setFullscreen(false);
-		stage.resize(1, 1);
+		stage.displayState = StageDisplayState.NORMAL;
 	}
 	
 	static public function check() {
