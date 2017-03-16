@@ -16,23 +16,23 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="C:\files\tools\sdks\haxe\haxe\lib\openfl\2,2,7" />
-    <class path="C:\files\tools\sdks\haxe\haxe\lib\lime\2,1,2" />
-    <class path="C:\files\tools\sdks\haxe\haxe\lib\actuate\1,8,2" />
-    <class path="c:\files\dev\grapetools" />
-    <class path="c:\files\dev\inputter" />
+    <class path="C:\files\dev\openfl" />
+    <class path="C:\files\dev\lime" />
+    <class path="C:\files\tools\sdks\haxe\haxe\lib\actuate\1,8,7" />
+    <class path="C:\files\dev\grapetools" />
+    <class path="C:\files\dev\inputter" />
     <class path="src" />
     <class path="lib" />
     <class path="bin\windows\cpp\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="openfl=2.2.7&#xA;lime=2.1.2&#xA;actuate=1.8.2&#xA;grapetools=0.0.1&#xA;inputter=0.0.1&#xA;tools=2.1.2&#xA;no-compilation&#xA;native&#xA;RENDER_TILE&#xA;lime-native&#xA;openfl-native&#xA;windows&#xA;desktop" />
+    <option directives="openfl=3.4.0&#xA;lime=2.7.0&#xA;actuate=1.8.7&#xA;grapetools=0.0.1&#xA;inputter=0.0.1&#xA;openfl-next&#xA;tools=2.7.0&#xA;no-compilation&#xA;native&#xA;RENDER_TILE&#xA;lime-native&#xA;openfl-native&#xA;windows&#xA;desktop&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--remap flash:openfl&#xA;#--macro keep(&quot;com.grapefrukt.apps.fullfrontal.Main&quot;)&#xA;-debug " />
+    <option additional="--remap flash:openfl&#xA;#--macro keep(&quot;com.grapefrukt.apps.fullfrontal.Main&quot;)" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
