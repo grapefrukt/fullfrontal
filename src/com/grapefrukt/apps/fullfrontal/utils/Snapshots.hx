@@ -44,12 +44,12 @@ class Snapshots {
 		if (game == null) return;
 		if (game.snap == null) return;
 		
-		var image = BitmapData.load(Settings.PATH_SNAPS + '/' + game.name + '.png');
-		if (image != null) {
+		var image = BitmapData.fromFile(Settings.PATH_SNAPS + '/' + game.name + '.png');
+		if (image != null && image.width != 0) {
 			numLoaded++;
 			matrix.identity();
 			matrix.scale(game.snap.width / image.width, game.snap.height / image.height);
-			game.snap.draw(image, matrix, null, null, null, true);
+			game.snap.draw(image, matrix, null, null, null, false);
 			image.dispose();
 		} else {
 			trace('missing snap for ${game.name}');
